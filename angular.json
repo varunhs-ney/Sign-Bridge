@@ -17,9 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist/sign-translate"
-            },
+            "outputPath": "www",
             "index": "src/index.html",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
@@ -86,18 +84,12 @@
               "includePaths": ["node_modules/"]
             },
             "scripts": [],
-            "serviceWorker": "ngsw-config.json",
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true,
             "webWorkerTsConfig": "tsconfig.worker.json",
-            "browser": "src/main.ts",
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -107,7 +99,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": {"styles": {"inlineCritical": false}},
+              "optimization": { "styles": { "inlineCritical": false }},
               "outputHashing": "all",
               "sourceMap": true,
               "namedChunks": true,
@@ -126,7 +118,9 @@
               ]
             },
             "development": {
-              "serviceWorker": false
+              "optimization": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "development"
@@ -170,47 +164,7 @@
             ],
             "assets": [
               "src/assets",
-              "src/manifest.webmanifest",
-              {
-                "glob": "**/*",
-                "input": "./node_modules/@mediapipe/holistic/",
-                "output": "./assets/models/holistic/"
-              },
-              {
-                "glob": "**/*",
-                "input": "./node_modules/@mediapipe/tasks-text/wasm/",
-                "output": "./assets/models/mediapipe-language-detector/"
-              },
-              {
-                "glob": "*.wasm",
-                "input": "./node_modules/@tensorflow/tfjs-backend-wasm/dist/",
-                "output": "./assets/models/tfjs-backend-wasm/"
-              },
-              {
-                "glob": "*.svg",
-                "input": "./node_modules/flag-icons/flags/1x1/",
-                "output": "./assets/flags/1x1/"
-              },
-              {
-                "glob": "*.ttf",
-                "input": "./node_modules/@sutton-signwriting/font-ttf/font",
-                "output": "./assets/fonts/signwriting/"
-              },
-              {
-                "glob": "**/*.json",
-                "input": "node_modules/@sign-mt/i18n/build/",
-                "output": "./assets/i18n/"
-              },
-              {
-                "glob": "**/*",
-                "input": "node_modules/@sign-mt/browsermt/artifacts/",
-                "output": "./browsermt/"
-              },
-              {
-                "glob": "worker.js",
-                "input": "node_modules/@sign-mt/browsermt/build/bundled/",
-                "output": "./browsermt/"
-              }
+              "src/manifest.webmanifest"
             ],
             "styles": ["src/theme/styles.scss"],
             "scripts": [],
@@ -227,6 +181,6 @@
     }
   },
   "cli": {
-    "analytics": "da7f7e1b-ea69-47b0-a971-5d7f28b86a48"
+    "analytics": false
   }
 }
