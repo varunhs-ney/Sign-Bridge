@@ -1,0 +1,32 @@
+@if (videoState$ | async; as videoState) {
+  @if (poseState$ | async; as poseState) {
+    <ng-container *transloco="let t; read: 'video'">
+      @if (videoState.error) {
+        <p>{{ t('errors.' + videoState.error) }}</p>
+      } @else if (!poseState.isLoaded) {
+        <p>{{ 'pose.loading' | transloco }}</p>
+      }
+    </ng-container>
+
+    <div [hidden]="videoState.error || !poseState.isLoaded" id="video-container">
+      <!-- video element (hidden if drawVideo is false in settings) -->
+      <video #video muted playsinline crossorigin="anonymous"></video>
+
+      <!-- main drawing canvas — poseService draws skeleton + hands here -->
+      <canvas #canvas height="100%" width="100%"></canvas>
+
+      <!-- fps / stats container (kept hidden if not used) -->
+      <div #stats></div>
+
+      <!-- keep a simple replay overlay only (no other controls) -->
+      @if (videoEnded) {
+        <div class="video-overlay" (click)="replayVideo()">
+          <ion-icon name="play-circle-outline" />
+        </div>
+      }
+    </div>
+
+    <!-- removed animation and floating controls to show only skeleton -->
+    <!-- NOTE: app-animation and app-video-controls removed intentionally -->
+  }
+}

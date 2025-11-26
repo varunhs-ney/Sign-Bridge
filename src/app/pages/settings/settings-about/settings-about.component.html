@@ -1,0 +1,66 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [text]="'settings.title' | transloco"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ 'About Team' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="settings-about-page">
+  <div class="page-container">
+    <section class="team-section">
+      <h2 class="section-title">Our Team</h2>
+
+      <div class="team-grid">
+        <div class="team-tile">
+          <div class="team-photo">
+            <img src="assets/team/lavanya.jpg" alt="D S Lavanya" loading="lazy">
+          </div>
+          <div class="team-content">
+            <h3>D S Lavanya</h3>
+            <p>Developer</p>
+          </div>
+        </div>
+
+        <div class="team-tile">
+          <div class="team-photo">
+            <img src="assets/team/deepak.jpg" alt="Deepak M" loading="lazy">
+          </div>
+          <div class="team-content">
+            <h3>Deepak M</h3>
+            <p>Developer</p>
+          </div>
+        </div>
+
+        <div class="team-tile">
+          <div class="team-photo">
+            <img src="assets/team/varun.jpg" alt="H S Varun" loading="lazy">
+          </div>
+          <div class="team-content">
+            <h3>H S Varun</h3>
+            <p>Developer</p>
+          </div>
+        </div>
+
+        <div class="team-tile">
+          <div class="team-photo">
+            <img src="assets/team/monalisa.jpg" alt="Monalisa S" loading="lazy">
+          </div>
+          <div class="team-content">
+            <h3>Monalisa S</h3>
+            <p>Developer</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="project-section">
+      <h2 class="section-title">About the Project</h2>
+      <p>
+        Sign Bridge is an accessibility-first project that aims to bridge the gap
+        between spoken language and sign language through AI-assisted workflows.
+      </p>
+    </section>
+  </div>
+</ion-content>

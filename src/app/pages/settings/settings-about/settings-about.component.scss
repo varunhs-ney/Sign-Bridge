@@ -1,0 +1,58 @@
+.settings-about-page {
+  .page-container{ max-width:1100px; margin:0 auto; padding:18px; }
+
+  .section-title{ margin:6px 0 12px; color:var(--ion-color-primary); }
+
+  .team-section { margin-bottom:30px;
+
+    .team-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap:24px;
+      align-items:start;
+    }
+
+    .team-tile {
+      background:#efe8e8;
+      border-radius:12px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      text-align:center;
+      min-height:320px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+
+      /* ===== IMAGE AREA (uniform, recommended) ===== */
+      .team-photo {
+        width:100%;
+        height:240px;            /* change to make images taller/shorter */
+        overflow:hidden;
+        background:#eee;
+        display:block;
+
+        img {
+          width:100%;
+          height:100%;
+          object-fit:cover;      /* <-- recommended for consistent look */
+          object-position:center;
+          display:block;
+        }
+      }
+
+      .team-content {
+        padding:16px;
+        h3 { margin:6px 0 6px; font-size:18px; color:#111; }
+        p  { margin:0; color:var(--ion-color-medium); font-size:14px; }
+      }
+    }
+  }
+
+  .project-section{ margin-top:20px;
+    p{ color:var(--ion-color-medium); line-height:1.6; }
+  }
+
+  @media (max-width:480px){
+    .team-grid{ gap:16px; }
+    .team-tile .team-photo { height:200px; }
+  }
+}
