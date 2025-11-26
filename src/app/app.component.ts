@@ -1,17 +1,18 @@
-import {AfterViewInit, Component, inject} from '@angular/core';
-import {TranslocoService} from '@jsverse/transloco';
-import {filter, tap} from 'rxjs/operators';
-import {firstValueFrom} from 'rxjs';
-import {NavigationEnd, Router} from '@angular/router';
-import {GoogleAnalyticsService} from './core/modules/google-analytics/google-analytics.service';
-import {Capacitor} from '@capacitor/core';
-import {languageCodeNormalizer} from './core/modules/transloco/languages';
-import {Meta} from '@angular/platform-browser';
-import {IonApp, IonRouterOutlet} from '@ionic/angular/standalone';
-import {getUrlParams} from './core/helpers/url';
+import { AfterViewInit, Component, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { TranslocoService } from '@jsverse/transloco';
+import { filter, tap } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { GoogleAnalyticsService } from './core/modules/google-analytics/google-analytics.service';
+import { Capacitor } from '@capacitor/core';
+import { languageCodeNormalizer } from './core/modules/transloco/languages';
+import { Meta } from '@angular/platform-browser';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { getUrlParams } from './core/helpers/url';
 import * as CookieConsent from 'vanilla-cookieconsent';
-import {ConsentStatus, ConsentType, FirebaseAnalytics} from '@capacitor-firebase/analytics';
-import {MediaMatcher} from '@angular/cdk/layout';
+import { ConsentStatus, ConsentType, FirebaseAnalytics } from '@capacitor-firebase/analytics';
+import { MediaMatcher } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,7 @@ export class AppComponent implements AfterViewInit {
   private transloco = inject(TranslocoService);
   private router = inject(Router);
   private mediaMatcher = inject(MediaMatcher);
+  private platformId = inject(PLATFORM_ID);
 
   urlParams = getUrlParams();
 
@@ -44,17 +46,21 @@ export class AppComponent implements AfterViewInit {
           'minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1.0, viewport-fit=cover, width=device-width',
       });
 
-      const {SplashScreen} = await import(
+      const { SplashScreen } = await import(
         /* webpackChunkName: "@capacitor/splash-screen" */ '@capacitor/splash-screen'
       );
       await SplashScreen.hide();
     }
 
-    this.initCookieConsent();
+    // Run cookie consent only in the browser (prevents SSR/runtime errors)
+    if (isPlatformBrowser(this.platformId)) {
+      this.initCookieConsent();
+    }
   }
 
   updateToolbarColor() {
-    if (!('window' in globalThis)) {
+    // Only run client-side
+    if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
@@ -77,7 +83,9 @@ export class AppComponent implements AfterViewInit {
       const mode = matcher.matches ? 'dark' : 'light';
       const selector = `meta[name="theme-color"][media="(prefers-color-scheme: ${mode})"]`;
       const themeColor = document.head.querySelector(selector);
-      themeColor.setAttribute('content', toolbarColor);
+      if (themeColor) {
+        themeColor.setAttribute('content', toolbarColor);
+      }
     }
 
     matcher.addEventListener('change', onColorSchemeChange);
@@ -112,9 +120,9 @@ export class AppComponent implements AfterViewInit {
           flipButtons: false,
         },
       },
-      onConsent: ({cookie}) => {
+      onConsent: ({ cookie }) => {
         console.log('Consent given:', cookie);
-        const categories: {[key: string]: ConsentType[]} = {
+        const categories: { [key: string]: ConsentType[] } = {
           functionality: [ConsentType.FunctionalityStorage, ConsentType.PersonalizationStorage],
           analytics: [ConsentType.AnalyticsStorage],
           marketing: [ConsentType.AdStorage, ConsentType.AdPersonalization, ConsentType.AdUserData],
@@ -124,7 +132,7 @@ export class AppComponent implements AfterViewInit {
             ? ConsentStatus.Granted
             : ConsentStatus.Denied;
           for (const type of types) {
-            FirebaseAnalytics.setConsent({type, status: consent});
+            FirebaseAnalytics.setConsent({ type, status: consent });
           }
         }
       },
@@ -185,9 +193,13 @@ export class AppComponent implements AfterViewInit {
   listenLanguageChange() {
     const urlParam = this.urlParams.get('lang');
 
-    if (!('navigator' in globalThis) || !('document' in globalThis)) {
+    // If not running in a browser, only set language from URL param (or fallback) and return.
+    if (!isPlatformBrowser(this.platformId)) {
       if (urlParam) {
         this.transloco.setActiveLang(urlParam);
+      } else {
+        // fallback to a safe default when there is no navigator
+        this.transloco.setActiveLang(languageCodeNormalizer('en'));
       }
       return;
     }
@@ -208,10 +220,14 @@ export class AppComponent implements AfterViewInit {
       )
       .subscribe();
 
-    this.transloco.setActiveLang(urlParam || languageCodeNormalizer(navigator.language));
+    const browserLang = navigator?.language ?? 'en';
+    this.transloco.setActiveLang(urlParam || languageCodeNormalizer(browserLang));
   }
 
   checkURLEmbedding(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
     const urlParam = this.urlParams.get('embed');
     if (urlParam !== null) {
       document.body.classList.add('embed');
@@ -219,10 +235,11 @@ export class AppComponent implements AfterViewInit {
   }
 
   async setPageKeyboardClass() {
-    if (!Capacitor.isNativePlatform()) {
+    // Only run on native/browser platforms
+    if (!Capacitor.isNativePlatform() || !isPlatformBrowser(this.platformId)) {
       return;
     }
-    const {Keyboard} = await import(/* webpackChunkName: "@capacitor/keyboard" */ '@capacitor/keyboard');
+    const { Keyboard } = await import(/* webpackChunkName: "@capacitor/keyboard" */ '@capacitor/keyboard');
     const html = document.documentElement;
     const className = 'keyboard-is-open';
     Keyboard.addListener('keyboardWillShow', () => html.classList.add(className));
